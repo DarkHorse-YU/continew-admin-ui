@@ -105,6 +105,11 @@ export const setupRouterGuard = (router: Router) => {
               }
             })
             hasRouteFlag = true
+            const homePath = routeStore.getHomePath()
+            if (to.path === '/') {
+              next({ path: homePath, replace: true })
+              return
+            }
             // 确保添加路由已完成
             // 设置 replace: true, 因此导航将不会留下历史记录
             next({ ...to, replace: true })
@@ -114,6 +119,10 @@ export const setupRouterGuard = (router: Router) => {
             next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
           }
         } else {
+          if (to.path === '/') {
+            next(routeStore.getHomePath())
+            return
+          }
           next()
         }
       }

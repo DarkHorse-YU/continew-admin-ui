@@ -12,27 +12,6 @@ export const systemRoutes: RouteRecordRaw[] = [
     meta: { hidden: true },
   },
   {
-    path: '/',
-    name: 'Dashboard',
-    component: Layout,
-    redirect: '/dashboard/workplace',
-    meta: { title: '仪表盘', icon: 'dashboard', hidden: false },
-    children: [
-      {
-        path: '/dashboard/workplace',
-        name: 'Workplace',
-        component: () => import('@/views/dashboard/workplace/index.vue'),
-        meta: { title: '工作台', icon: 'desktop', hidden: false, affix: true },
-      },
-      {
-        path: '/dashboard/analysis',
-        name: 'Analysis',
-        component: () => import('@/views/dashboard/analysis/index.vue'),
-        meta: { title: '分析页', icon: 'insert-chart', hidden: false },
-      },
-    ],
-  },
-  {
     path: '/social/callback',
     component: () => import('@/views/login/social/index.vue'),
     meta: { hidden: true },
@@ -72,7 +51,7 @@ export const systemRoutes: RouteRecordRaw[] = [
     path: '/about',
     name: 'About',
     component: Layout,
-    meta: { title: '关于项目', icon: 'apps', hidden: false, sort: 999 },
+    meta: { title: '关于项目', icon: 'apps', hidden: true, sort: 999 },
     redirect: '/about/document/api',
     children: [
       {

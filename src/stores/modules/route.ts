@@ -6,6 +6,7 @@ import { cloneDeep, omit } from 'lodash-es'
 import { constantRoutes, systemRoutes } from '@/router/route'
 import { type RouteItem, getUserRoute } from '@/apis'
 import { transformPathToName } from '@/utils'
+import { isHttp } from '@/utils/validate'
 import { asyncRouteModules } from '@/router/asyncModules'
 
 const layoutComponentMap = {
@@ -74,6 +75,28 @@ export const flatMultiLevelRoutes = (routes: RouteRecordRaw[]) => {
   })
 }
 
+const getFirstAvailablePath = (routes: RouteRecordRaw[]): string | undefined => {
+  for (const route of routes) {
+    if (route.meta?.hidden)
+      continue
+
+    if (typeof route.redirect === 'string' && route.redirect !== 'noRedirect' && !isHttp(route.redirect)) {
+      return route.redirect
+    }
+
+    if (route.children?.length) {
+      const childPath = getFirstAvailablePath(route.children)
+      if (childPath) {
+        return childPath
+      }
+    }
+
+    if (route.path && route.path !== '/' && !isHttp(route.path)) {
+      return route.path
+    }
+  }
+}
+
 const storeSetup = () => {
   // 所有路由(常驻路由 + 动态路由)
   const routes = ref<RouteRecordRaw[]>([])
@@ -97,10 +120,15 @@ const storeSetup = () => {
     return flatRoutes
   }
 
+  const getHomePath = () => {
+    return getFirstAvailablePath(asyncRoutes.value) || '/403'
+  }
+
   return {
     routes,
     asyncRoutes,
     generateRoutes,
+    getHomePath,
   }
 }
 
