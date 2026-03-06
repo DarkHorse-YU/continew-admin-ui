@@ -5,7 +5,7 @@
       :data="dataList"
       :columns="columns"
       :loading="loading"
-      :scroll="{ x: '100%', y: '100%', minWidth: 1350 }"
+      :scroll="{ x: '100%', y: '100%', minWidth: 900 }"
       :pagination="pagination"
       :disabled-tools="['size']"
       @refresh="search"
@@ -49,7 +49,7 @@
         <a-space>
           <a-link v-permission="['marketing:activityReview:get']" title="详情" @click="onDetail(record)">详情</a-link>
           <a-link
-            v-if="record.currentStatus === 1"
+            v-if="record.currentStatus === 'PENDING'"
             v-permission="['marketing:activityReview:audit']"
             status="warning"
             title="审核"
@@ -93,8 +93,22 @@ const queryForm = reactive<ActivityReviewQuery>({
   carType: undefined,
   startTime: datetimeRange.value[0],
   endTime: datetimeRange.value[1],
-  sort: ['submitTime,desc'],
+  sort: ['createdAt,desc'],
 })
+
+// 监听字典数据加载完成后设置默认值
+watch(
+  [application_status, car_type],
+  ([statusList, carTypeList]) => {
+    if (statusList?.length && queryForm.currentStatus === undefined) {
+      queryForm.currentStatus = statusList[0].value as string
+    }
+    if (carTypeList?.length && queryForm.carType === undefined) {
+      queryForm.carType = carTypeList[0].value as string
+    }
+  },
+  { immediate: true },
+)
 
 const {
   tableData: dataList,
@@ -111,23 +125,17 @@ const columns: TableInstance['columns'] = [
     render: ({ rowIndex }) => h('span', {}, rowIndex + 1 + (pagination.current - 1) * pagination.pageSize),
     fixed: !isMobile() ? 'left' : undefined,
   },
+  { title: '申请ID', dataIndex: 'applicationNo', width: 200 },
   {
     title: '活动名称',
     dataIndex: 'activityName',
     minWidth: 180,
     ellipsis: true,
     tooltip: true,
-    fixed: !isMobile() ? 'left' : undefined,
   },
-  { title: '活动编号', dataIndex: 'activityCode', width: 170 },
-  { title: '购车类型', dataIndex: 'carType', slotName: 'carType', minWidth: 120, align: 'center' },
-  { title: '发起人', dataIndex: 'sponsorName', minWidth: 140, ellipsis: true, tooltip: true },
-  { title: '提交人', dataIndex: 'submitUserString', minWidth: 140, ellipsis: true, tooltip: true },
-  { title: '提交时间', dataIndex: 'submitTime', width: 180 },
   { title: '状态', dataIndex: 'currentStatus', slotName: 'currentStatus', width: 120, align: 'center' },
-  { title: '审核人', dataIndex: 'auditUserString', minWidth: 140, ellipsis: true, tooltip: true },
-  { title: '审核时间', dataIndex: 'auditTime', width: 180 },
-  { title: '审核备注', dataIndex: 'auditRemark', minWidth: 220, ellipsis: true, tooltip: true },
+  { title: '购车类型', dataIndex: 'carType', slotName: 'carType', minWidth: 120, align: 'center' },
+  { title: '创建时间', dataIndex: 'createdAt', width: 180 },
   {
     title: '操作',
     dataIndex: 'action',
@@ -167,13 +175,13 @@ const onExport = () => {
 const DetailDrawerRef = ref<InstanceType<typeof DetailDrawer>>()
 // 详情
 const onDetail = (record: ActivityReviewResp) => {
-  DetailDrawerRef.value?.onOpen(record.id)
+  DetailDrawerRef.value?.onOpen(record.id.toString())
 }
 
 const AuditModalRef = ref<InstanceType<typeof AuditModal>>()
 // 审核
 const onAudit = (record: ActivityReviewResp) => {
-  AuditModalRef.value?.onOpen(record)
+  AuditModalRef.value?.onOpen(record.id.toString())
 }
 </script>
 

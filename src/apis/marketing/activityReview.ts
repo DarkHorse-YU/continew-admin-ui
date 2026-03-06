@@ -3,7 +3,7 @@ import http from '@/utils/http'
 
 export type * from './type'
 
-const BASE_URL = '/marketing/activityReview'
+const BASE_URL = '/activity/subsidy/admin/application'
 
 /** @desc 查询活动审核列表 */
 export function listActivityReview(query: T.ActivityReviewPageQuery) {
@@ -17,7 +17,7 @@ export function getActivityReview(id: string) {
 
 /** @desc 审核活动 */
 export function auditActivityReview(id: string, data: T.ActivityAuditReq) {
-  return http.patch(`${BASE_URL}/${id}/audit`, data)
+  return http.post(`${BASE_URL}/${id}/review`, data)
 }
 
 /** @desc 导出活动审核 */
