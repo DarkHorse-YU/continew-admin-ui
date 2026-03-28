@@ -9,7 +9,11 @@
     <a-row align="stretch" class="login-box">
       <a-col :xs="0" :sm="12" :md="13">
         <div class="login-left">
-          <img class="login-left__img" src="@/assets/images/banner.png" alt="banner" />
+          <AnimatedCharacters
+            :is-typing="isTyping"
+            :show-password="showPassword"
+            :password-length="passwordLength"
+          />
         </div>
       </a-col>
       <a-col :xs="24" :sm="12" :md="11">
@@ -96,11 +100,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, provide, ref } from 'vue'
 import Background from './components/background/index.vue'
 import AccountLogin from './components/account/index.vue'
 import PhoneLogin from './components/phone/index.vue'
 import EmailLogin from './components/email/index.vue'
+import AnimatedCharacters from './components/animated-characters/Index.vue'
 import { socialAuth } from '@/apis/auth'
 import { useAppStore } from '@/stores'
 import { useTenantStore } from '@/stores/modules/tenant'
@@ -118,6 +123,12 @@ const logo = computed(() => appStore.getLogo())
 
 const isEmailLogin = ref(false)
 const activeTab = ref('1')
+
+// 动画角色交互状态
+const isTyping = ref(false)
+const showPassword = ref(false)
+const passwordLength = ref(0)
+provide('animatedState', { isTyping, showPassword, passwordLength })
 
 // 切换登录模式
 const toggleLoginMode = () => {
@@ -392,18 +403,7 @@ onMounted(() => {
     position: relative;
     overflow: hidden;
     background: linear-gradient(60deg, rgb(var(--primary-6)), rgb(var(--primary-3)));
-
-    &__img {
-      width: 100%;
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      top: 50%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-50%);
-      transition: all 0.3s;
-      object-fit: cover;
-    }
+    transform: scale(0.85);
   }
 
   .login-right {

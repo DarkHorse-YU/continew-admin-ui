@@ -12,10 +12,21 @@
       <a-input v-model="tenantCode" placeholder="请输入租户编码（不输入时为默认租户）" allow-clear />
     </a-form-item>
     <a-form-item field="username" hide-label>
-      <a-input v-model="form.username" placeholder="请输入用户名" allow-clear />
+      <a-input v-model="form.username" placeholder="请输入用户名" allow-clear @focus="onFocus" @blur="onBlur" />
     </a-form-item>
     <a-form-item field="password" hide-label>
-      <a-input-password v-model="form.password" placeholder="请输入密码" />
+      <a-input
+        v-model="form.password"
+        :type="passwordVisible ? 'text' : 'password'"
+        placeholder="请输入密码"
+        @focus="onFocus"
+        @blur="onBlur"
+      >
+        <template #suffix>
+          <icon-eye v-if="passwordVisible" class="eye-icon" @click="togglePassword" />
+          <icon-eye-invisible v-else class="eye-icon" @click="togglePassword" />
+        </template>
+      </a-input>
     </a-form-item>
     <a-form-item v-if="isCaptchaEnabled" field="captcha" hide-label>
       <a-input v-model="form.captcha" placeholder="请输入验证码" :max-length="4" allow-clear style="flex: 1 1" />
@@ -113,6 +124,26 @@ const userStore = useUserStore()
 const tabsStore = useTabsStore()
 const router = useRouter()
 const loading = ref(false)
+
+// 动画角色交互状态
+const animatedState = inject<{ isTyping: Ref<boolean>; showPassword: Ref<boolean>; passwordLength: Ref<number> }>('animatedState')
+const passwordVisible = ref(false)
+
+const onFocus = () => {
+  if (animatedState) animatedState.isTyping.value = true
+}
+const onBlur = () => {
+  if (animatedState) animatedState.isTyping.value = false
+}
+const togglePassword = () => {
+  passwordVisible.value = !passwordVisible.value
+  if (animatedState) {
+    animatedState.showPassword.value = passwordVisible.value
+  }
+}
+watch(() => form.password, (val) => {
+  if (animatedState) animatedState.passwordLength.value = val.length
+})
 // 登录
 const handleLogin = async () => {
   try {
@@ -216,5 +247,13 @@ onMounted(() => {
 .overlay p {
   font-size: 12px;
   color: white;
+}
+
+.eye-icon {
+  cursor: pointer;
+  color: var(--color-text-3);
+  &:hover {
+    color: var(--color-text-1);
+  }
 }
 </style>
