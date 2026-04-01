@@ -33,6 +33,7 @@
             <div class="list">
               <div v-if="isEmailLogin" class="mode item" @click="toggleLoginMode"><icon-user /> 账号/手机号登录</div>
               <div v-else class="mode item" @click="toggleLoginMode"><icon-email /> 邮箱登录</div>
+              <!-- 第三方登录（已注释，需要时取消注释）
               <a class="item" title="使用 Gitee 账号登录" @click="onOauth('gitee')">
                 <GiSvgIcon name="gitee" :size="24" />
               </a>
@@ -42,6 +43,7 @@
               <a class="item" title="使用微信账号登录" @click="onOauth('wechat_open')">
                 <GiSvgIcon name="wechat" :size="24" />
               </a>
+              -->
             </div>
           </div>
         </div>
@@ -85,6 +87,7 @@
       <div class="list">
         <div v-if="isEmailLogin" class="mode item" @click="toggleLoginMode"><icon-user /> 账号/手机号登录</div>
         <div v-else class="mode item" @click="toggleLoginMode"><icon-email /> 邮箱登录</div>
+        <!-- 第三方登录（已注释，需要时取消注释）
         <a class="item" title="使用 Gitee 账号登录" @click="onOauth('gitee')">
           <GiSvgIcon name="gitee" :size="24" />
         </a>
@@ -94,6 +97,7 @@
         <a class="item" title="使用微信账号登录" @click="onOauth('wechat_open')">
           <GiSvgIcon name="wechat" :size="24" />
         </a>
+        -->
       </div>
     </div>
   </div>
@@ -106,7 +110,7 @@ import AccountLogin from './components/account/index.vue'
 import PhoneLogin from './components/phone/index.vue'
 import EmailLogin from './components/email/index.vue'
 import AnimatedCharacters from './components/animated-characters/Index.vue'
-import { socialAuth } from '@/apis/auth'
+// import { socialAuth } from '@/apis/auth' // 第三方登录API（已注释）
 import { useAppStore } from '@/stores'
 import { useTenantStore } from '@/stores/modules/tenant'
 import { useDevice } from '@/hooks'
@@ -135,11 +139,11 @@ const toggleLoginMode = () => {
   isEmailLogin.value = !isEmailLogin.value
 }
 
-// 第三方登录授权
-const onOauth = async (source: string) => {
-  const { data } = await socialAuth(source)
-  window.location.href = data.authorizeUrl
-}
+// 第三方登录授权（已注释，需要时取消注释）
+// const onOauth = async (source: string) => {
+//   const { data } = await socialAuth(source)
+//   window.location.href = data.authorizeUrl
+// }
 
 // 查询租户状态和租户编码
 const onGetTenant = async () => {
